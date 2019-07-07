@@ -1,2 +1,3 @@
-
-  // put your mongoURI here
+{
+  "mongoURI": "mongodb+srv://kenken182:badger@foodlist-f2uqx.mongodb.net/test?retryWrites=true&w=majority"
+}

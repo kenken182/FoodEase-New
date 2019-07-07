@@ -6,7 +6,6 @@ const Item = require('../../models/groceryList');
 // @route   POST api/groceryList
 // @desc    Put in items into grocery list
 // @access  Private
-
 router.post('/',
 [
   check('item', 'Must have an item!')
@@ -37,6 +36,7 @@ async (req, res) => {
       price,
     });
     await item.save();
+    return res.json(item)
     res.send('New saved!');
    }
   // catch error!
@@ -92,7 +92,7 @@ router.get('/getOne', async (req, res) => {
     if(!item) {
       res.status(400).json({ msg: 'This item does not exist!' });
     }
-    res.json(item)
+    return res.json(item)
     // Catch errors
   } catch(err) {
     console.error(err.message);
@@ -105,9 +105,10 @@ router.get('/getOne', async (req, res) => {
 // @access  Public
 router.get('/getAll', async (req, res) => {
   try {
-    // Find the item and response with it!
+    // Find the item and respond with it!
     const items = await Item.find()
-    res.json(items)
+    console.log(items)
+    return res.json(items)
     // Catch errors
   } catch(err) {
     console.error(err.message);
@@ -115,4 +116,65 @@ router.get('/getAll', async (req, res) => {
   }
 })
 
+// @route   GET api/groceryList/getMissing
+// @desc    Gets the missing ingredients
+// @access  Public
+router.get('/getMissing', async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+  try {
+    let counter;
+    const recipe = [ "Beef", "Chicken", "Rice", "Pork", "Egg"] // Will be an API result
+    // Get every item in grocery list
+    const items = await(Item.find())
+    .then((item) => {
+      item.forEach((eachItem) => {
+        // Check which items you have are in the recipe, and remove them from the recipe list
+        if (recipe.includes(eachItem.item)) {
+          counter = recipe.indexOf(eachItem.item)
+          recipe.splice(counter, 1);
+        }
+      })
+    })
+    return res.json(recipe)
+    // catch errors
+  } catch(err) {
+    console.error(err.message);
+    res.status(500).send('Server error')
+  }
+})
+
+// @route   GET api/groceryList/getRecipes
+// @desc    Gets 10 recipes matching 5+ ingredients
+// @access  Public
+router.get('/getRecipes', async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
+  let ingredients = await Item.find()
+  ingredients.sort((a,b) => {
+    return b.quantity - a.quantity
+  })
+
+  let recipes = [[ "Beef", "Chicken", "Rice", "Pork", "Egg", "Curry", "Salt", "Pepper"],
+                 [ "Beef", "Chicken", "Rice", "Pork", "Egg", "Curry", "Salt", "Pepper"],
+                 [ "Rice", "Pork", "Egg", "Eggplant", "Jalapeno", "Flour", "Milk"]]
+  let finishedRecipes = []
+  let counter = 0;
+  for (let i = 0; i < 3; i++) {
+    ingredients.forEach((eachItem) => {
+      if (recipes[i].includes(eachItem.item)) {
+        counter++;
+      }
+    })
+    if (counter >= 4) {
+      finishedRecipes[i] = recipes[i];
+    }
+    counter = 0;
+  }
+  res.json(finishedRecipes)
+})
 module.exports = router;
