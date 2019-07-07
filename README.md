@@ -15,3 +15,5 @@ If you want to pull from this repo, a few things:
 July 7 2019 Commit:
 API Routes for the grocery list is setup. Users can now get, post and update ingredients to their ingredient list. 
 Next step: Make a mock list of a recipes ingredients, which will return the missing ingredients and the number of missing ingredients. Basically, compare two arrays, and find which ones are different.
+
+One thing I am considering right now is that the compare will be in O(n^2). However, this is likely okay, since usually ingredient lists are not insanely long.
