@@ -22,3 +22,6 @@ July 7 2019 Second Commit:
 I was right! I couldn't find a compare other than O(n^2) because I'm not too familiar with JavaScript data structures. 
 It would be a lot better if I could use a Hash Table, which I know how to implement in Python. I'll have to read into it
 and refactor another time.
+
+July 10 2019 Commit:
+The landing page was created. That is all. Here comes the tough stuff.
